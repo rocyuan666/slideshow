@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>无缝轮播图</title>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		.banner{
+			position: relative;
+			width:1000px;
+			height:500px;
+			margin:50px auto;
+			overflow: hidden;
+		}
+		.imgUl{
+			position: absolute;
+			top:0;
+			width:100000px;
+		}
+		li{
+			float: left;
+			list-style:none;
+		}
+		#right,#left{
+			opacity: .6;
+			position: absolute;
+			top:45%;
+			cursor:pointer;
+			transition:all .5s;
+		}
+		#right:hover,#left:hover{
+			opacity: 1;
+			transform: scale(1.3);
+		}
+		#right{
+			right: 0;
+		}
+		#left{
+			left: 0;
+		}
+		#dian{
+			position: absolute;
+			bottom:10px;
+			left: 45%;
+		}
+		#dian span{
+			display: inline-block;
+			width:16px;
+			height:16px;
+			border-radius:50%;
+			margin-left: 5px;
+			cursor:pointer;
+			background-color: #fff;
+			font-size: 0;
+		}
+		#dian .foucs{
+			background-color: #dd4012;
+		}
+	</style>
+</head>
+<body>
+	<div class="banner">
+		<ul class="imgUl" style="left:0;">
+			<li><img src="images/0.jpg" alt=""></li>
+			<li><img src="images/1.jpg" alt=""></li>
+			<li><img src="images/2.jpg" alt=""></li>
+			<li><img src="images/3.jpg" alt=""></li>
+			<li><img src="images/4.jpg" alt=""></li>
+			<li><img src="images/5.jpg" alt=""></li>
+		</ul>
+		<img id="right" src="images/r.png" alt="">
+		<img id="left" src="images/l.png" alt="">
+		<div id="dian"></div>
+	</div>
+	<script>
+		var right = document.getElementById("right");
+		var left = document.getElementById("left");
+		var dian = document.getElementById("dian");
+		var banner = document.getElementsByClassName("banner")[0];
+		var imgUl = document.getElementsByClassName("imgUl")[0];
+		var liList = imgUl.getElementsByTagName("li");
+		var count = liList.length;
+		var n = 0;	//图片位置
+		var m = 0;	//小圆点
+		var vr = false;
+		right.onclick = function(){
+			n++;
+			//正常情况
+			if(n < count){
+				m++;
+				donghua("right");
+			}
+			//无缝滚动
+			if(n == count){
+				//克隆第一个图
+				newLi = liList[0].cloneNode(true);
+				//将克隆的图插入到最后一张图
+				imgUl.appendChild(newLi);
+				donghua("right");
+				m = 0;
+			}
+		}
+		left.onclick = function(){
+			n--;
+			//正常情况
+			if(n != -1){
+				m--
+				donghua("left");
+			}else{
+				n = 0
+				newLi = liList[liList.length-1].cloneNode(true);
+				imgUl.insertBefore(newLi,imgUl.firstChild);
+				imgUl.style.left = "-1000px";
+				donghua("left");
+				m = count-1;
+				vr = true;
+			}
+		}
+		function donghua(point){
+			var t = setInterval(function(){
+				updian()
+				var positionL = parseInt(imgUl.style.left);
+				if(point == "right"){
+					imgUl.style.left = positionL + Math.floor((n * -1000 - positionL)/15) + "px";
+				}
+				if(point == "left"){
+					imgUl.style.left = positionL + Math.ceil((n * -1000 - positionL)/15) + "px";
+				}
+				//停止计时
+				if(positionL == n * -1000){
+					//左边 删除克隆的li
+					if(n == count){
+						//立刻校正真实的第一张图
+						imgUl.style.left = 0 + "px";
+						imgUl.removeChild(newLi)
+						n = 0;
+					}
+					//右边 删除克隆的li
+					if(vr){
+						//立刻校正真实的最后一张图
+						imgUl.style.left = (-(count - 1) * 1000) + "px";
+						imgUl.removeChild(newLi);
+						n = count-1;
+						vr = false;
+					}
+					clearInterval(t);
+				}
+			},16)
+		}
+		// 自动播放
+		var autoPlay = setInterval(function(){
+			right.onclick();
+		},3000)
+		//生成小圆点并初始化
+		for(var i = 0 ; i < count ; i++){
+			var spanDian = document.createElement("span");
+			dian.appendChild(spanDian);
+			spanDian.setAttribute("xiabiao",i)
+		}
+		var dianList = dian.getElementsByTagName("span");
+		dianList[0].className = "foucs";
+		//更新小圆点
+		function updian(){
+			for(i = 0 ; i < count ; i++){
+				dianList[i].className="";
+			}
+			dianList[m].className="foucs";
+		}
+		//智能判断
+		banner.onmouseenter = function(){
+			clearInterval(autoPlay);
+		}
+		banner.onmouseleave = function(){
+			autoPlay = setInterval(function(){
+				right.onclick();
+			},3000)
+		}
+		//点击小圆点
+		for(var j = 0 ; j < count ; j++){
+			dianList[j].onclick = function(){
+				if(this.getAttribute("xiabiao") > n){
+					n = this.getAttribute("xiabiao");
+					m = n;
+					donghua("right");
+				}
+				if(this.getAttribute("xiabiao") < n){
+					n = this.getAttribute("xiabiao");
+					m = n;
+					donghua("left");
+				}
+			}
+		}
+
+	</script>
+</body>
+</html>
