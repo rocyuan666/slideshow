@@ -2,198 +2,552 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>无缝轮播图</title>
+	<title>轮播图</title>
 	<style>
 		*{
-			margin:0;
 			padding:0;
+			margin:0;
 		}
 		.banner{
-			position: relative;
-			width:1000px;
-			height:500px;
+			width:730px;
+			height:336px;
+			overflow:hidden;
 			margin:50px auto;
-			overflow: hidden;
+			position:relative;
+			border-radius:5px;
 		}
-		.imgUl{
-			position: absolute;
-			top:0;
-			width:100000px;
+		ul{
+			float:left;
+			height:100%;
+			width:10000px;
 		}
 		li{
-			float: left;
 			list-style:none;
+			float:left;
 		}
-		#right,#left{
-			opacity: .6;
-			position: absolute;
+		li img{
+			display:block;
+		}
+		#left,#right{
+			position:absolute;
 			top:45%;
+			color:#fff;
+			font-size:30px;
+			text-align:center;
+			line-height:40px;
+			background-color:rgba(255,255,255,0.5);
 			cursor:pointer;
-			transition:all .5s;
-		}
-		#right:hover,#left:hover{
-			opacity: 1;
-			transform: scale(1.3);
-		}
-		#right{
-			right: 0;
+			transition:0.5s;
 		}
 		#left{
-			left: 0;
+			left:0;
+		}
+		#right{
+			right:0;
+		}
+		#left:hover,#right:hover{
+			transform:scale(1.1);
+		}
+		i{
+			display:inline-block;
+			width:15px;
+			height:15px;
+			background-color:#f2f2f2;
+			border-radius:50%;
+			margin-right:10px;
+			font-size:0;
 		}
 		#dian{
-			position: absolute;
-			bottom:10px;
-			left: 45%;
+			position:absolute;
+			bottom:5px;
+			left:42%;
 		}
-		#dian span{
-			display: inline-block;
-			width:16px;
-			height:16px;
-			border-radius:50%;
-			margin-left: 5px;
-			cursor:pointer;
-			background-color: #fff;
-			font-size: 0;
+		.yanse{
+			background-color:#ffa500;
 		}
-		#dian .foucs{
-			background-color: #dd4012;
+		#last_i{
+			display:none;
 		}
 	</style>
 </head>
 <body>
 	<div class="banner">
-		<ul class="imgUl" style="left:0;">
-			<li><img src="images/0.jpg" alt=""></li>
-			<li><img src="images/1.jpg" alt=""></li>
-			<li><img src="images/2.jpg" alt=""></li>
-			<li><img src="images/3.jpg" alt=""></li>
-			<li><img src="images/4.jpg" alt=""></li>
-			<li><img src="images/5.jpg" alt=""></li>
+		<ul id="ul" style="margin-left:0px;">
+			<li id="first_img">
+				<img src="image/1.jpg" alt="">
+			</li>
+			<li>
+				<img src="image/2.jpg" alt="">
+			</li>
+			<li>
+				<img src="image/3.jpg" alt="">
+			</li>
+			<li id="last_img">
+				<img src="image/4.jpg" alt="">
+			</li>
 		</ul>
-		<img id="right" src="images/r.png" alt="">
-		<img id="left" src="images/l.png" alt="">
-		<div id="dian"></div>
+		<span id="left">
+			<img src="image/l.png" alt="" width="30" height="30">
+		</span>
+		<span id="right">
+			<img src="image/r.png" alt="" width="30" height="30">
+		</span>
+		<div id="dian">
+			<!-- <i class="yanse">0</i>
+			<i>1</i>
+			<i>2</i>
+			<i>3</i>
+			<i id="last_i"></i> -->
+		</div>
 	</div>
+
 	<script>
-		var right = document.getElementById("right");
+		//左右点击按钮
 		var left = document.getElementById("left");
-		var dian = document.getElementById("dian");
+		var right = document.getElementById("right");
+		//图片父元素
 		var banner = document.getElementsByClassName("banner")[0];
-		var imgUl = document.getElementsByClassName("imgUl")[0];
-		var liList = imgUl.getElementsByTagName("li");
-		var count = liList.length;
-		var n = 0;	//图片位置
-		var m = 0;	//小圆点
-		var vr = false;
-		right.onclick = function(){
-			n++;
-			//正常情况
-			if(n < count){
-				m++;
-				donghua("right");
-			}
-			//无缝滚动
-			if(n == count){
-				//克隆第一个图
-				newLi = liList[0].cloneNode(true);
-				//将克隆的图插入到最后一张图
-				imgUl.appendChild(newLi);
-				donghua("right");
-				m = 0;
-			}
-		}
-		left.onclick = function(){
-			n--;
-			//正常情况
-			if(n != -1){
-				m--
-				donghua("left");
-			}else{
-				n = 0
-				newLi = liList[liList.length-1].cloneNode(true);
-				imgUl.insertBefore(newLi,imgUl.firstChild);
-				imgUl.style.left = "-1000px";
-				donghua("left");
-				m = count-1;
-				vr = true;
-			}
-		}
-		function donghua(point){
-			var t = setInterval(function(){
-				updian()
-				var positionL = parseInt(imgUl.style.left);
-				if(point == "right"){
-					imgUl.style.left = positionL + Math.floor((n * -1000 - positionL)/15) + "px";
-				}
-				if(point == "left"){
-					imgUl.style.left = positionL + Math.ceil((n * -1000 - positionL)/15) + "px";
-				}
-				//停止计时
-				if(positionL == n * -1000){
-					//左边 删除克隆的li
-					if(n == count){
-						//立刻校正真实的第一张图
-						imgUl.style.left = 0 + "px";
-						imgUl.removeChild(newLi)
+		var ul = document.getElementById("ul");
+		//图片集合
+		var imglist = ul.getElementsByTagName("li");
+		var imgLength = imglist.length;
+		//第一张最后一张图片
+		var imgR = document.getElementById("last_img");
+		var imgL = document.getElementById("first_img");
+		var clone_first = imgL.cloneNode(true);
+		var clone_last = imgR.cloneNode(true);
+		//小圆点
+		var iElement = document.getElementsByTagName("i");
+		//当前图片位置
+		var n = 0;
+		var m = 0;
+		var imgWidth = 730;
+		var kongzhi = false;
+		//防止用户多次点击按钮
+		var userClick = false;
+
+
+
+		//右击移动图片计时器
+		function imgmoveR(){
+			updatacircle();
+			rightmove = setInterval(function(){
+				userClick = true;
+				//获取当前图片的margin-left值
+				var imgLoction = parseInt(ul.style.marginLeft);
+				//每次的left值都要改变
+				ul.style.marginLeft = imgLoction + Math.floor((-n*imgWidth-imgLoction)/10) + "px";
+				//当为图片宽度的整数时清除计时器
+				if(imgLoction == -(n*imgWidth)){
+					clearInterval(rightmove);
+					userClick = false;
+					//获取插入假图片后当前的图片总数
+					var liList = ul.getElementsByTagName("li");
+					//此时的n是真实图片个数4,试图中对应的是插入后图片节点的最后一张图位置
+					if(n==imgLength){
+						ul.removeChild(liList[liList.length-1])
+						ul.style.marginLeft = "0px";
 						n = 0;
 					}
-					//右边 删除克隆的li
-					if(vr){
-						//立刻校正真实的最后一张图
-						imgUl.style.left = (-(count - 1) * 1000) + "px";
-						imgUl.removeChild(newLi);
-						n = count-1;
-						vr = false;
-					}
-					clearInterval(t);
 				}
 			},16)
 		}
-		// 自动播放
-		var autoPlay = setInterval(function(){
-			right.onclick();
-		},3000)
-		//生成小圆点并初始化
-		for(var i = 0 ; i < count ; i++){
-			var spanDian = document.createElement("span");
-			dian.appendChild(spanDian);
-			spanDian.setAttribute("xiabiao",i)
-		}
-		var dianList = dian.getElementsByTagName("span");
-		dianList[0].className = "foucs";
-		//更新小圆点
-		function updian(){
-			for(i = 0 ; i < count ; i++){
-				dianList[i].className="";
+
+		//右击事件
+		right.onclick = function(){
+			if(!userClick){
+				n++;//用来指向要去的图片的位置
+				m++;
+				if(n==imgLength){//此句话表示当前我们已经在真实图片中的最后一张，我们将克隆一张新的放入
+					//将克隆的副本放在在最后
+					ul.appendChild(clone_first);
+					m = 0;
+				}
+				imgmoveR();
 			}
-			dianList[m].className="foucs";
+			updatacircle();
 		}
+
+		//自动播放
+		var outoplay = setInterval(function(){
+			right.onclick();
+		},1800)
+
 		//智能判断
 		banner.onmouseenter = function(){
-			clearInterval(autoPlay);
+			clearInterval(outoplay);
 		}
+
 		banner.onmouseleave = function(){
-			autoPlay = setInterval(function(){
+			outoplay = setInterval(function(){
 				right.onclick();
-			},3000)
+			},1800)
 		}
-		//点击小圆点
-		for(var j = 0 ; j < count ; j++){
-			dianList[j].onclick = function(){
-				if(this.getAttribute("xiabiao") > n){
-					n = this.getAttribute("xiabiao");
-					m = n;
-					donghua("right");
+
+
+		//左边移动计时器	
+		function imgmoveL(){
+			updatacircle();
+			leftmove = setInterval(function(){
+				//获取当前的margin值
+				userClick = true;
+				var imgLoction = parseInt(ul.style.marginLeft);
+				ul.style.marginLeft = imgLoction + Math.ceil((-n*imgWidth-imgLoction)/10) + "px"; 
+				// 如果刚好显示一张图片则清除计时器
+				if(imgLoction == -n*imgWidth){
+					clearInterval(leftmove)
+					userClick = false;
+					var liList = ul.getElementsByTagName("li");
+					if(!kongzhi){
+						ul.removeChild(clone_last);
+						ul.style.marginLeft = -(imgLength-1)*imgWidth + "px";
+						kongzhi = true
+						n = liList.length-1;
+					} 
 				}
-				if(this.getAttribute("xiabiao") < n){
-					n = this.getAttribute("xiabiao");
-					m = n;
-					donghua("left");
+			},16)
+		}
+
+		//左击事件
+		left.onclick = function(){
+			if(!userClick){
+				n--;
+				if(n !== -1){
+					m--;
+					imgmoveL();
+				}else{
+					n = 0;
+					var first_li = ul.getElementsByTagName("li")[0];
+					ul.insertBefore(clone_last,first_li);
+					ul.style.marginLeft = -imgWidth + "px";
+					kongzhi = false;
+					m = imgLength-1;
+					imgmoveL();
 				}
 			}
 		}
 
+		//初始化小圆点
+		function initcircle(){
+			for(var i = 0;i<imgLength;i++){
+				var circle = document.createElement("i");
+				var dian = document.getElementById("dian")
+				dian.appendChild(circle);
+				var index = circle.setAttribute("index",i)
+			}
+		}
+
+		initcircle()
+		ilist = document.getElementsByTagName("i");
+		ilist[0].className = "yanse";
+
+		//小圆点更新
+		function updatacircle(){
+			for(var i = 0;i<ilist.length;i++){
+				ilist[i].className = "";
+			}
+			ilist[m].className = "yanse";
+		}
+
+		//圆点单击事件
+		for(var j = 0;j<imgLength;j++){
+			ilist[j].onclick = function(){
+				var thisLoction = this.getAttribute("index");
+				//当前点击小圆点大于图片位置
+				if(n<thisLoction){
+					n = thisLoction;
+					m = thisLoction;
+					imgmoveR();
+				}
+				if(n>thisLoction){
+					n = thisLoction;
+					m = thisLoction;
+					imgmoveL();
+				}
+			}
+		}
+
+
+
+
+
+
+
+
+		// right.onclick = function(){
+		// 	//当点击后意味着图片移动了一张，那么每点击一次b加1
+		// 	iElement[b].className = "";
+		// 	b++;
+		// 	iElement[b].className = "yanse"
+		// 	if(b<imglist.length){
+		// 		//声明一个计时器
+		// 		var b1 = setInterval(function(){
+		// 			//每次执行计时器的时候都先获取ul的margin值
+		// 			var mag = parseInt(ul.style.marginLeft)
+		// 			var luceng = (-b*730);
+		// 			//一张图片完整放下是730的倍数，当不是730的倍数是说明图片没有显示完全
+		// 			if(mag !== (-b*730)){
+		// 				//那么让图片的mar
+		// 				//gin值每次移动-73px;
+		// 				ul.style.marginLeft = mag +Math.floor((luceng-mag)/10)+ "px";
+		// 			}else{
+		// 				//如果显示完整的图片时让计时器停止
+		// 				clearInterval(b1);
+		// 			}
+		// 		},20)
+		// 	}else{//进入当前分支表示图片到了最后一张
+		// 		//那么进入计时器
+		// 		// console.log(b)
+		// 		b = 0;
+		// 		iElement[b].className = "yanse"
+		// 		var next1 = setInterval(function(){
+		// 			//让回到第一张图片
+		// 			//每次执行计时器都获取当前的margin值
+		// 			var magi = parseInt(ul.style.marginLeft);
+		// 			//如果他的margin值不为0，那么进入判断
+		// 			var luceng = -(b*730);
+		// 			if(magi !== -(b*730)){
+		// 				//让margin的值每次加73px直到0
+		// 				ul.style.marginLeft = magi + Math.floor((luceng-magi))/10 + "px";
+		// 			}else{//margin 值等于0的时候进入分支
+		// 				// 清除计时器
+		// 				b = 0;
+						
+		// 				clearInterval(next1);
+		// 			}
+		// 		},20)
+		// 	}
+		// }
+
+		// left.onclick = function (){
+		// 	//如果当前图片在第一
+		// 	// console.log(b)
+		// 	iElement[b].className = "";
+		// 	if(b == 0){
+		// 		b = imglist.length-1;
+		// 		iElement[b].className = "yanse" 
+		// 		var prev = setInterval(function(){
+		// 			//获取当前的margin值
+		// 			var mag = parseInt(ul.style.marginLeft);
+		// 			//console.log(mag)
+		// 			//如果margin的值不是最后一张图片所在的位置
+		// 			var luceng = -((imglist.length-1)*730);
+		// 			if(mag !== -((imglist.length-1)*730)){
+		// 				//那么让他每次减上一定的值直到最后到达最后一张的位置
+		// 				ul.style.marginLeft = mag + Math.floor((luceng-mag)/10) +"px"
+		// 				//console.log(mag)
+		// 			}else{//如果margin的值等于最后一张图片所在的位置
+		// 				//那么清除计时器
+		// 				clearInterval(prev)
+		// 			}
+		// 		},20)
+		// 	}else{
+ 	// 			b--;
+ 	// 			iElement[b].className = "yanse"
+		// 		var prev1 = setInterval(function(){
+		// 			var magi = parseInt(ul.style.marginLeft);
+		// 			console.log(magi)
+		// 			var luceng = -(b * 730)
+		// 			if(magi !== -(b * 730)){
+		// 				ul.style.marginLeft = magi + Math.ceil((luceng-magi)/10) + "px";
+		// 				console.log(magi)
+		// 			}else{
+		// 				clearInterval(prev1)
+		// 			}
+		// 		},20)
+		// 	}
+		// }
+
+		// function mofang(){
+		// 	iElement[b].className = ""
+		// 	b++;
+		// 	iElement[b].className = "yanse"
+		// 	if(b<imglist.length){
+		// 		//声明一个计时器
+		// 		var b1 = setInterval(function(){
+		// 			//每次执行计时器的时候都先获取ul的margin值
+		// 			var mag = parseInt(ul.style.marginLeft)
+		// 			//一张图片完整放下是730的倍数，当不是730的倍数是说明图片没有显示完全
+		// 			var luceng = (-b*730);
+		// 			if(mag !== (-b*730)){
+		// 				//那么让图片的margin值每次移动-73px;
+		// 				ul.style.marginLeft = mag +Math.floor((luceng-mag)/10)+ "px";
+		// 			}else{
+		// 				//如果显示完整的图片时让计时器停止
+		// 				clearInterval(b1);
+		// 			}
+		// 		},20)
+		// 	}else{//进入当前分支表示图片到了最后一张
+		// 		//那么进入计时器
+		// 		// console.log(b)
+		// 		b = 0;
+		// 		var next1 = setInterval(function(){
+		// 			//让回到第一张图片
+		// 			//每次执行计时器都获取当前的margin值
+		// 			var magi = parseInt(ul.style.marginLeft);
+		// 			//如果他的margin值不为0，那么进入判断
+		// 			var luceng = -(b*730);
+		// 			if(magi !== -(b*730)){
+		// 				//让margin的值每次加73px直到0
+		// 				ul.style.marginLeft = magi + Math.floor((luceng-magi))/10 + "px";
+		// 			}else{//margin 值等于0的时候进入分支
+		// 				// 清除计时器
+		// 				b = 0;
+		// 				iElement[b].className = "yanse"
+		// 				clearInterval(next1);
+		// 			}
+		// 		},20)
+		// 	}		
+		// }
+
+		// function autopl(){
+		// 	b3 = setInterval(function(){
+		// 		mofang();
+		// 	},1800)
+		// }                                                                     
+
+		// autopl();
+
+		// banner.onmouseenter = function (){
+		// 	clearInterval(b3)
+		// }
+
+		// banner.onmouseleave = function (){
+		// 	autopl();
+		// }
+
+
+
+
+		//console.log(iElement)
+		//a用来确定图片的位置，因为图片和圆点位置相对应，所以可以用a做圆点的下标
+		//var a = 0;
+		// right.onclick = function(){
+		// 	//将第一张对应的圆点类名清除
+		// 	ul.insertBefore(clone_first,ul.lastChild)
+		// 	iElement[a].className = "";
+		// 	a++;
+		// 	if(a<imglist.length){
+		// 		var b1 = setInterval(function(){
+		// 			//每次执行事件之前先获取ul的margin-left的值
+		// 			var mag = parseInt(ul.style.marginLeft);
+		// 			//如果margin-left不是730的倍数那么进入语句
+		// 			if(mag !== -(a*730)){
+		// 				//让margin-left每次减少5px
+		// 				ul.style.marginLeft = mag - 73 + "px";
+		// 			}
+		// 			//如果是730的倍数意味着刚好显示出一张图片，那么清除计时器
+		// 			else{
+		// 				clearInterval(b1)
+		// 				iElement[a].className = "yanse";
+		// 			}
+		// 		},30)
+		// 	}else{
+		// 			var b1 = setInterval(function(){
+		// 				a = 0;
+		// 				//每次执行事件之前先获取ul的margin-left的值
+		// 				var mag = parseInt(ul.style.marginLeft);
+		// 				//如果margin-left不是730的倍数那么进入语句
+		// 				if(mag !== -(a*730)){
+		// 					//让margin-left每次减少5px
+		// 					ul.style.marginLeft = 0 + "px";
+		// 				}
+		// 				//如果是730的倍数意味着刚好显示出一张图片，那么清除计时器
+		// 				else{
+		// 					clearInterval(b1)
+		// 					0iElement[a].className = "yanse"
+		// 				}
+		// 		},30)
+		// 	}
+		// }
+
+		// left.onclick = function (){
+		// 	ul.insertBefore(clone_last,ul.firstChild)
+		// 	iElement[a].className = ""
+		// 	if(a<imglist.length&&a>0){
+		// 		var b2 = setInterval(function(){
+		// 			var mag = parseInt(ul.style.marginLeft)
+		// 			if(mag !== -(a*730)){
+		// 				ul.style.marginLeft = mag + 73 + "px"
+		// 			}else{
+		// 				clearInterval(b2)
+		// 				iElement[a].className = "yanse"
+		// 			}
+		// 		},30)
+		// 	}else{
+		// 		//console.log(a)
+		// 		a = imglist.length;
+		// 		// console.log(a)o
+		// 		var b2 = setInterval(function(){
+		// 			var mag = parseInt(ul.style.marginLeft)
+		// 			if(mag !== -(a*730)){
+		// 				ul.style.marginLeft = -(a)*730 + "px"
+		// 			}else{
+		// 				clearInterval(b2)
+		// 				iElement[a].className = "yanse"
+		// 			}
+
+		// 		},30)
+		// 	}
+		// 	a--;
+		// }
+
+		// //将右点击定义成函数
+		// function autoplay(){
+		// 	ul.insertBefore(clone_first,ul.lastChild)
+		// 	//将第一个圆类名清楚
+		// 	iElement[a].className = "";
+		// 	a++;
+		// 		if(a<imglist.length){
+		// 			var b1 = setInterval(function(){
+		// 				//每次执行事件之前先获取ul的margin-left的值
+		// 				var mag = parseInt(ul.style.marginLeft);
+		// 				//如果margin-left不是730的倍数那么进入语句
+		// 				if(mag !== -(a*730)){
+		// 					//让margin-left每次减少5px
+		// 					ul.style.marginLeft = mag - 73 + "px";
+		// 				}
+		// 				//如果是730的倍数意味着刚好显示出一张图片，那么清除计时器
+		// 				else{
+		// 					clearInterval(b1)
+		// 					//a是确定第几张图，那么也能确定哪个圆点
+		// 					iElement[a].className = "yanse"
+		// 				}
+		// 			},30)
+		// 		}else{
+		// 			a = 0;
+		// 			var b1 = setInterval(function(){
+		// 				//每次执行事件之前先获取ul的margin-left的值
+		// 				var mag = parseInt(ul.style.marginLeft);
+		// 				//如果margin-left不是730的倍数那么进入语句
+		// 				if(mag !== -(a*730)){
+		// 					//让margin-left每次减少5px
+		// 					ul.style.marginLeft = mag + 73*3 + "px";
+		// 				}
+		// 				//如果是730的倍数意味着刚好显示出一张图片，那么清除计时器
+		// 				else{
+		// 					clearInterval(b1)
+		// 					iElement[a].className = "yanse"
+		// 				}
+		// 			},30)
+		// 		}
+		// }
+
+		// //每隔3000毫秒点击一次
+		// function aup(){
+		// 	b3 = setInterval(function(){
+		// 		autoplay();
+		// 	},1800)
+		// }
+
+		// aup();
+		// banner.onmouseenter = function(){
+		// 	clearInterval(b3)
+		// }
+
+		// banner.onmouseleave = function(){
+		// 	aup();
+		// }
 	</script>
 </body>
 </html>
